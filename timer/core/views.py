@@ -11,7 +11,7 @@ from rest_framework.response import Response
 from .models import Note
 from .serializer import NoteSerializer
 
-
+#registrations view
 def register_view(request):
     if request.method == 'POST':
         username = request.POST.get('username')
@@ -19,7 +19,7 @@ def register_view(request):
         password1 = request.POST.get('password1')
         password2 = request.POST.get('password2')
         
-        # Validation
+        # Validation pw
         if not (username and email and password1 and password2):
             messages.error(request, 'Alle Felder müssen ausgefüllt sein.')
             return render(request, 'timer/pages/registration_page.html')
@@ -61,6 +61,6 @@ def login_view(request):
     #login actions
     return render(request, 'timer/pages/login_page.html')
 
-@login_required(login_url='login_page')  # Giriş yapmamış kullanıcıları login sayfasına yönlendirir
+@login_required(login_url='login_page')  # Giriş yapmamış kullanıcıları login sayfasına yönlendirir /leitet nicht Angemeldete nutzer automatisch weiter zur Anmeldeseite
 def dashboard_view(request):
     return render(request, 'timer/pages/dashboard.html')
