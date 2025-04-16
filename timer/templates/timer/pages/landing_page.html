@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -9,21 +10,21 @@
       href="https://fonts.googleapis.com/css2?family=Irish+Grover&family=Roboto:ital,wght@0,100..900;1,100..900&display=swap"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="../styles/landing_page.css" />
+    <link rel="stylesheet" href="{% static 'landing_page.css' %}" />
     <title>Timer</title>
   </head>
   <body>
     <header class="header">
       <div class="blankbox"></div>
       <h1 class="logo">Timer</h1>
-      <a class="login-button" href="./login_page.html">Login</a>
+      <a class="login-button" href="{% url 'login_page' %}">Login</a>
     </header>
     <main class="main">
       <div class="main-context">
         <p class="text1">Manage <br />deine <br />Zeit...</p>
         <p class="text2">Spare <br />mehr <br />Zeit...</p>
       </div>
-      <a class="login-button" href="./registration_page.html"
+      <a class="login-button" href="{% url 'register_page' %}"
         >Los Starten...</a
       >
     </main>

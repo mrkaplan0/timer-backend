@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -10,22 +11,28 @@
       rel="stylesheet"
     />
 
-    <link rel="stylesheet" href="../styles/login_page.css" />
-    <title>Timer - Login</title>
+    <link rel="stylesheet" href="{% static 'login_page.css' %}" />
+    <title>Timer - Register</title>
   </head>
   <body>
     <header class="header">
       <div class="blankbox"></div>
       <h1 class="logo">Timer</h1>
-      <a class="login-button" href="./landing_page.html">Zurück</a>
+      <a class="login-button" href="{% url 'landing_page' %}">Zurück</a>
     </header>
     <main class="main">
       <div class="login-box">
-        <form class="register-form">
+        <form
+          class="register-form"
+          method="POST"
+          action="{% url 'register_page' %}"
+        >
+          {% csrf_token %}
           <label for="username">Username</label>
           <input
             type="username"
             id="username"
+            name="username"
             placeholder="Username eingeben"
             required
           />
@@ -34,28 +41,38 @@
           <input
             type="email"
             id="email"
+            name="email"
             placeholder="Email eingeben"
             required
           />
 
-          <label for="password">Passwort</label>
+          <label for="password1">Passwort</label>
           <input
             type="password"
-            id="password"
+            id="password1"
+            name="password1"
             placeholder="Passwort eingeben"
             required
           />
 
-          <label for="password">Passwort Wiederholen</label>
+          <label for="password2">Passwort Wiederholen</label>
           <input
             type="password"
-            id="password"
+            id="password2"
+            name="password2"
             placeholder="Passwort wiederholen"
             required
           />
 
-          <button class="login-button">Register</button>
+          <button type="submit" class="login-button">Register</button>
         </form>
+        {% if messages %}
+        <div class="messages">
+          {% for message in messages %}
+          <div class="message {{ message.tags }}">{{ message }}</div>
+          {% endfor %}
+        </div>
+        {% endif %}
       </div>
     </main>
   </body>

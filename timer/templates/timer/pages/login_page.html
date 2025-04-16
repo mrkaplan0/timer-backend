@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -10,14 +11,14 @@
       rel="stylesheet"
     />
 
-    <link rel="stylesheet" href="../styles/login_page.css" />
+    <link rel="stylesheet" href="{% static 'login_page.css' %}" />
     <title>Timer - Login</title>
   </head>
   <body>
     <header class="header">
       <div class="blankbox"></div>
       <h1 class="logo">Timer</h1>
-      <a class="login-button" href="./landing_page.html">Zurück</a>
+      <a class="login-button" href="{% url 'landing_page' %}">Zurück</a>
     </header>
     <main class="main">
       <div class="login-box">
