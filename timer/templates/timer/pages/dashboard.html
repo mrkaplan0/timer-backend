@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Kalender</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
+      integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Irish+Grover&family=Roboto:ital,wght@0,100..900;1,100..900&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="../styles/dashboard.css" />
+  </head>
+
+  <body>
+    <header class="header">
+      <div class="blankbox"></div>
+      <h1 class="logo">Timer</h1>
+      <a class="login-button" href="./landing_page.html">Logout</a>
+    </header>
+    <main class="main">
+      <div class="groups">
+        <ul id="group-list"></ul>
+      </div>
+
+      <div class="nav-buttons">
+        <a href="#" id="prev-month">&laquo; Vorheriger Monat</a>
+        <a href="#" id="next-month">Nächster Monat &raquo;</a>
+      </div>
+    </main>
+    <div class="container-table" id="calendar"></div>
+    <!-- Add Button and Popup -->
+    <button type="button" class="add-button" id="open-modal">
+      <i class="fa-solid fa-plus"></i>
+    </button>
+
+    <div id="modal" class="modal">
+      <div class="modal-content">
+        <span class="close" id="close-modal">&times;</span>
+        <h3>Neue Notiz</h3>
+        <form id="note-form">
+          <label>Datum</label>
+          <input type="date" name="date" required />
+          <label>Notiz</label>
+          <textarea name="note" required></textarea>
+          <label> Priorität</label>
+          <select name="priority" required>
+            <option value="1">Gering</option>
+            <option value="2">Mittel</option>
+            <option value="3">Hoch</option>
+          </select>
+          <button type="submit">Hinzufügen</button>
+        </form>
+      </div>
+    </div>
+
+    <!-- Add Button and Popup End -->
+    <!-- Scripts -->
+    <!-- create Calender -->
+    <script>
+      const groups = [
+        { id: 1, groupName: "Gering", color: "#BEE4D0" },
+        { id: 2, groupName: "Mittel", color: "#FF8282" },
+        { id: 3, groupName: "Hoch", color: "#FF6363" },
+      ];
+
+      const notes = [
+        { note_date: "2025-04-15", note_text: "Ausflug", groupID: 2 },
+        { note_date: "2025-04-18", note_text: "Geburtstag", groupID: 1 },
+      ];
+
+      const groupList = document.getElementById("group-list");
+      groups.forEach((group) => {
+        const li = document.createElement("li");
+        li.innerHTML = `<div class='round' style='background-color: ${group.color};'></div>${group.groupName}`;
+        groupList.appendChild(li);
+      });
+
+      const calendarContainer = document.getElementById("calendar");
+
+      let currentDate = new Date();
+      let currentMonth = currentDate.getMonth() + 1;
+      let currentYear = currentDate.getFullYear();
+
+      function drawCalendar(month, year) {
+        const daysOfWeek = ["So", "Mo", "Di", "Mi", "Do", "Fr", "Sa"];
+        const firstDay = new Date(year, month - 1, 1);
+        const totalDays = new Date(year, month, 0).getDate();
+        const startDay = firstDay.getDay();
+
+        let calendar = `<table><caption>${firstDay.toLocaleString("default", {
+          month: "long",
+        })} ${year}</caption><tr>`;
+        daysOfWeek.forEach((day) => {
+          calendar += `<th>${day}</th>`;
+        });
+        calendar += `</tr><tr>`;
+
+        for (let i = 0; i < startDay; i++) {
+          calendar += `<td></td>`;
+        }
+
+        const today = new Date().toISOString().split("T")[0];
+
+        for (let day = 1; day <= totalDays; day++) {
+          const dateStr = `${year}-${String(month).padStart(2, "0")}-${String(
+            day
+          ).padStart(2, "0")}`;
+          const note = notes.find((n) => n.note_date === dateStr);
+          let noteText = "";
+          let roundDot = "";
+
+          if (note) {
+            noteText = `<div class="note">${note.note_text}</div>`;
+            const group = groups.find((g) => g.id === note.groupID);
+            roundDot = `<div class="round" style="background-color: ${group.color};"></div>`;
+          }
+
+          const isToday = dateStr === today;
+          calendar += `<td class="${
+            isToday ? "today" : ""
+          }">${day}<br>${noteText}${roundDot}</td>`;
+
+          if ((startDay + day) % 7 === 0) {
+            calendar += `</tr><tr>`;
+          }
+        }
+
+        calendar += `</tr></table>`;
+        calendarContainer.innerHTML = calendar;
+      }
+
+      document
+        .getElementById("prev-month")
+        .addEventListener("click", function (e) {
+          e.preventDefault();
+          currentMonth--;
+          if (currentMonth === 0) {
+            currentMonth = 12;
+            currentYear--;
+          }
+          drawCalendar(currentMonth, currentYear);
+        });
+
+      document
+        .getElementById("next-month")
+        .addEventListener("click", function (e) {
+          e.preventDefault();
+          currentMonth++;
+          if (currentMonth === 13) {
+            currentMonth = 1;
+            currentYear++;
+          }
+          drawCalendar(currentMonth, currentYear);
+        });
+
+      drawCalendar(currentMonth, currentYear);
+    </script>
+    <!-- open Note popup and add note-->
+    <script>
+      const modal = document.getElementById("modal");
+      const openBtn = document.getElementById("open-modal");
+      const closeBtn = document.getElementById("close-modal");
+      const form = document.getElementById("note-form");
+
+      // Modal open
+      openBtn.onclick = () => (modal.style.display = "flex");
+
+      // Modal close
+      closeBtn.onclick = () => (modal.style.display = "none");
+
+      window.onclick = (e) => {
+        if (e.target === modal) modal.style.display = "none";
+      };
+
+      // when the form is submitted, send the data to the server
+      form.addEventListener("submit", async (e) => {
+        e.preventDefault();
+
+        const date = form.date.value;
+        const note = form.note.value;
+        const priority = form.priority.value;
+
+        const data = {
+          note_date: date,
+          note_text: note,
+          priority: priority,
+        };
+
+        try {
+          const response = await fetch("http://localhost:8000/api/notes/", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(data),
+          });
+
+          if (response.ok) {
+            alert("Not başarıyla gönderildi!");
+            modal.style.display = "none";
+            form.reset();
+          } else {
+            const err = await response.json();
+            alert("Hata oluştu: " + JSON.stringify(err));
+          }
+        } catch (err) {
+          console.error(err);
+          alert("Sunucuya bağlanılamadı.");
+        }
+      });
+    </script>
+  </body>
+</html>
