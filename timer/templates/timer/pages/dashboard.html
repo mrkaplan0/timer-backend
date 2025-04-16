@@ -1,9 +1,11 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Kalender</title>
+
     <link
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
@@ -22,7 +24,14 @@
     <header class="header">
       <div class="blankbox"></div>
       <h1 class="logo">Timer</h1>
-      <a class="login-button" href="{% url 'login_page' %}">Login</a>
+
+      {% if user.is_authenticated %}
+      <div class="user-menu">
+        <span class="username">Willkommen, {{ user.username }}</span>
+        <a class="logout-button" href="{% url 'logout' %}">Logout</a>
+      </div>
+
+      {% endif %}
     </header>
     <main class="main">
       <div class="groups">

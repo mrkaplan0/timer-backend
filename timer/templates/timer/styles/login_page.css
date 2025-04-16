@@ -103,3 +103,19 @@ body {
   text-decoration: none;
   font-size: 0.9em;
 }
+
+.messages {
+  margin-top: 20px;
+}
+
+.message {
+  padding: 10px;
+  border-radius: 5px;
+  margin-bottom: 10px;
+}
+
+.error {
+  background-color: #ffecec;
+  color: #ff5f5f;
+  border: 1px solid #ff5f5f;
+}

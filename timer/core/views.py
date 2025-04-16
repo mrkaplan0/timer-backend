@@ -1,4 +1,9 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
+from django.contrib.auth.models import User
+from django.contrib.auth import login
+from django.contrib import messages
+from django.db import IntegrityError
+from django.contrib.auth.decorators import login_required
 
 # Create your views here.
 from rest_framework.decorators import api_view
@@ -6,10 +11,6 @@ from rest_framework.response import Response
 from .models import Note
 from .serializer import NoteSerializer
 
-from django.shortcuts import redirect
-from django.contrib.auth.models import User
-from django.contrib.auth import login
-from django.db import IntegrityError
 
 def register_view(request):
     if request.method == 'POST':
@@ -20,18 +21,21 @@ def register_view(request):
         
         # Validation
         if not (username and email and password1 and password2):
-            return render(request, 'timer/pages/registration_page.html', {'error_message': 'Alle Felder müssen ausgefüllt sein.'})
+            messages.error(request, 'Alle Felder müssen ausgefüllt sein.')
+            return render(request, 'timer/pages/registration_page.html')
         
         if password1 != password2:
-            return render(request, 'timer/pages/registration_page.html', {'error_message': 'Passwörter stimmen nicht überein.'})
+            messages.error(request, 'Passwörter stimmen nicht überein.')
+            return render(request, 'timer/pages/registration_page.html')
         
         try:
             user = User.objects.create_user(username=username, email=email, password=password1)
-            login(request, user)
-            return redirect('dashboard')  # Redirect to dashboard after successful registration
+            login(request, user)  # login user after registration
+            messages.success(request, 'Registrierung erfolgreich!')
+            return redirect('dashboard')  # direct to dashboard after registration
         except IntegrityError:
-            return render(request, 'timer/pages/registration_page.html', 
-                          {'error_message': 'Benutzername oder E-Mail existiert bereits.'})
+            messages.error(request, 'Benutzername oder E-Mail existiert bereits.')
+            return render(request, 'timer/pages/registration_page.html')
     
     return render(request, 'timer/pages/registration_page.html')
 
@@ -57,10 +61,6 @@ def login_view(request):
     #login actions
     return render(request, 'timer/pages/login_page.html')
 
-def register_view(request):
-    #register actions
-    return render(request, 'timer/pages/registration_page.html')
-
+@login_required(login_url='login_page')  # Giriş yapmamış kullanıcıları login sayfasına yönlendirir
 def dashboard_view(request):
-    # dashboard actions
     return render(request, 'timer/pages/dashboard.html')

@@ -50,6 +50,30 @@ body {
   scale: 1.05;
   transition: 0.3s;
 }
+.user-menu {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.username {
+  color: #333;
+  font-weight: 500;
+}
+
+.logout-button {
+  background-color: #ff6363;
+  color: white;
+  padding: 8px 12px;
+  border-radius: 4px;
+  text-decoration: none;
+  font-weight: bold;
+  transition: background-color 0.3s;
+}
+
+.logout-button:hover {
+  background-color: #ff4646;
+}
 
 /*    MAIN    */
 
