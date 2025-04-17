@@ -119,3 +119,17 @@ body {
   color: #ff5f5f;
   border: 1px solid #ff5f5f;
 }
+/* Responsive styles for login_page.css */
+@media (max-width: 768px) {
+  .header {
+    flex-direction: column;
+    padding: 20px;
+  }
+  .login-box {
+    width: 90%;
+    padding: 20px;
+  }
+  .login-box input, .login-box button {
+    font-size: 1rem;
+  }
+}
