@@ -262,4 +262,25 @@ button {
   font-size: 22px;
   cursor: pointer;
   margin-bottom: 20px;
+} 
+/* Responsive styles for dashboard.css */
+@media (max-width: 768px) {
+  .header {
+    flex-direction: column;
+    padding: 20px;
+  }
+  .main {
+    margin-top: 10px;
+  }
+  .container-table {
+    margin: 10px;
+  }
+  table {
+    font-size: 0.8rem;
+  }
+  .nav-buttons a {
+    padding: 5px 10px;
+    font-size: 0.9rem;
+  }
 }
+
