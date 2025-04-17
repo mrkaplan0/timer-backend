@@ -22,12 +22,25 @@
     </header>
     <main class="main">
       <div class="login-box">
-        <form class="login-form">
-          <label for="email">Email</label>
+        <form class="login-form" method="post" action="{% url 'login' %}">
+          {% csrf_token %} {% if messages %}
+          <div class="messages">
+            {% for message in messages %}
+            <p
+              class="message {% if message.tags %}{{ message.tags }}{% endif %}"
+            >
+              {{ message }}
+            </p>
+            {% endfor %}
+          </div>
+          {% endif %}
+
+          <label for="username">E-Mail oder Benutzername</label>
           <input
-            type="email"
-            id="email"
-            placeholder="Email eingeben"
+            type="username"
+            id="username"
+            name="username"
+            placeholder="E-Mail oder Benutzername eingeben"
             required
           />
 
@@ -35,16 +48,13 @@
           <input
             type="password"
             id="password"
+            name="password"
             placeholder="Passwort eingeben"
             required
           />
+
+          <button type="submit" class="login-button">Anmelden</button>
         </form>
-        <button
-          class="login-button"
-          onclick="{window.location.href='dashboard.html'}"
-        >
-          Anmelden
-        </button>
 
         <a href="#">Haben Sie Passwort vergessen?</a>
       </div>

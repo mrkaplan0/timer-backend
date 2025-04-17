@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth.models import User
-from django.contrib.auth import login
+from django.contrib.auth import login, authenticate, login as auth_login
 from django.contrib import messages
 from django.db import IntegrityError
 from django.contrib.auth.decorators import login_required
@@ -58,9 +58,35 @@ def index(request):
     return render(request, 'timer/pages/landing_page.html')
 
 def login_view(request):
-    #login actions
+    if request.method == 'POST':
+        username_or_email = request.POST.get('username')
+        password = request.POST.get('password')
+        
+        # Prüfen, ob die Eingabe eine E-Mail-Adresse ist
+        is_email = '@' in username_or_email
+        
+        user = None
+        
+        if is_email:
+            # Versuchen, den Benutzer anhand der E-Mail zu finden
+            try:
+                user_obj = User.objects.get(email=username_or_email)
+                # Authentifizierung mit dem Benutzernamen versuchen
+                user = authenticate(username=user_obj.username, password=password)
+            except User.DoesNotExist:
+                user = None
+        else:
+            # Direkter Authentifizierungsversuch mit dem Benutzernamen
+            user = authenticate(username=username_or_email, password=password)
+        
+        if user is not None:
+            auth_login(request, user)
+            return redirect('dashboard')
+        else:
+            messages.error(request, 'Ungültige Anmeldedaten. Bitte versuchen Sie es erneut.')
+    
     return render(request, 'timer/pages/login_page.html')
 
-@login_required(login_url='login_page')  # Giriş yapmamış kullanıcıları login sayfasına yönlendirir
+@login_required(login_url='login_page')  # Redirect to login page if not authenticated
 def dashboard_view(request):
     return render(request, 'timer/pages/dashboard.html')
