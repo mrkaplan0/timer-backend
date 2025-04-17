@@ -81,10 +81,33 @@
         { id: 3, groupName: "Hoch", color: "#FF6363" },
       ];
 
-      const notes = [
-        { note_date: "2025-04-15", note_text: "Ausflug", groupID: 2 },
-        { note_date: "2025-04-18", note_text: "Geburtstag", groupID: 1 },
-      ];
+      // Replace the hardcoded notes with empty array that we'll fill from the database
+      let notes = [];
+
+      // Function to fetch notes from the database
+      async function fetchNotes() {
+        try {
+          const response = await fetch("/api/notes/");
+          if (response.ok) {
+            const data = await response.json();
+            // Transform data to match our expected format
+            notes = data.map((note) => ({
+              note_date: note.date,
+              note_text: note.note,
+              groupID: note.priority,
+            }));
+            // Redraw calendar with the fetched notes
+            drawCalendar(currentMonth, currentYear);
+          } else {
+            console.error("Failed to fetch notes");
+          }
+        } catch (err) {
+          console.error("Error fetching notes:", err);
+        }
+      }
+
+      // Fetch notes when page loads
+      fetchNotes();
 
       const groupList = document.getElementById("group-list");
       groups.forEach((group) => {
@@ -195,35 +218,51 @@
         e.preventDefault();
 
         const date = form.date.value;
-        const note = form.note.value;
-        const priority = form.priority.value;
+        const noteText = form.note.value;
+        const priority = parseInt(form.priority.value);
 
+        // Match the data structure expected by your Django model
         const data = {
-          note_date: date,
-          note_text: note,
+          date: date,
+          note: noteText,
           priority: priority,
         };
 
         try {
-          const response = await fetch("http://localhost:8000/api/notes/", {
+          const response = await fetch("/api/notes/", {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
+              // Add CSRF token for Django
+              "X-CSRFToken": document.querySelector(
+                "[name=csrfmiddlewaretoken]"
+              ).value,
             },
             body: JSON.stringify(data),
           });
 
           if (response.ok) {
-            alert("Not başarıyla gönderildi!");
+            // Get the created note and add it to our notes array
+            const newNote = await response.json();
+            notes.push({
+              note_date: newNote.date,
+              note_text: newNote.note,
+              groupID: newNote.priority,
+            });
+
+            // Update the calendar with the new note
+            drawCalendar(currentMonth, currentYear);
+
+            alert("Notiz erfolgreich hinzugefügt!");
             modal.style.display = "none";
             form.reset();
           } else {
             const err = await response.json();
-            alert("Hata oluştu: " + JSON.stringify(err));
+            alert("Fehler: " + JSON.stringify(err));
           }
         } catch (err) {
           console.error(err);
-          alert("Sunucuya bağlanılamadı.");
+          alert("Verbindung zum Server fehlgeschlagen.");
         }
       });
     </script>
